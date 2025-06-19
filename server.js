@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
-const expressValidator = require('express-validator'); // Keep this line for now, but we'll use it differently
+const expressValidator = require('express-validator');
 const config = require('./_config');
 
 // Define routes
@@ -53,9 +53,6 @@ app.use(function (req, res, next) {
 });
 
 // Express Validator Middleware
-// The old way of directly calling expressValidator() as a function is deprecated/changed.
-// For older versions or compatibility, we might need to use it like this or downgrade.
-// A common fix for this error is to use the middleware as shown below, assuming an older pattern.
 app.use(expressValidator());
 
 
