@@ -15,7 +15,7 @@ let image = require('./routes/image');
 const app = express();
 
 // connecting the database
-mongoose.connect(config.mongoURI.production); // Make sure to use the correct URI for your environment
+mongoose.connect(config.mongoURI.production, { useNewUrlParser: true, useUnifiedTopology: true }); // Make sure to use the correct URI for your environment
 
 // test if the database has connected successfully
 let db = mongoose.connection;
