@@ -42,5 +42,12 @@ Jenkins
                 }
             }
         }
+
+        stage('Deploy') {
+            steps {
+                echo 'Starting Node.js server...'
+                sh 'node server.js'
+            }
+        }
     }
 }
