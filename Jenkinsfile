@@ -20,26 +20,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
-                script {
-                    try {
-                        sh 'npm test'
-                    } catch (err) {
-                        currentBuild.result = 'FAILURE'
-                        echo 'Tests failed. Sending failure email...'
-                        mail to: "${RECIPIENT}",
-                             subject: "🚨 Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                             body: """\
-Hi,
-
-The build for job ${env.JOB_NAME} [#${env.BUILD_NUMBER}] has failed during the test stage.
-You can view the build details at: ${env.BUILD_URL}
-
-Regards,
-Jenkins
-"""
-                        error("Build failed due to test failure.")
-                    }
-                }
+                sh 'npm test'
             }
         }
 
@@ -48,6 +29,28 @@ Jenkins
                 echo 'Starting Node.js server...'
                 sh 'node server.js'
             }
+        }
+    }
+
+    post {
+        failure {
+            echo 'Tests failed! Sending email...'
+            mail to: "${RECIPIENT}",
+                 subject: "🚨 Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: """\
+Hi,
+
+The build for job ${env.JOB_NAME} [#${env.BUILD_NUMBER}] has failed.
+You can view the build details at: ${env.BUILD_URL}
+
+Regards,
+Jenkins
+"""
+        }
+        success {
+            echo 'Deployment successful! Sending Slack notification...'
+            // Add your Slack notification here for Milestone 4
+            // Example: slackSend channel: '#YourFirstName_IP1', message: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} deployed successfully to Render: YOUR_RENDER_URL_HERE"
         }
     }
 }
