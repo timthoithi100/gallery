@@ -11,8 +11,11 @@ const config = require('./_config');
 let index = require('./routes/index');
 let image = require('./routes/image');
 
+// Initializing the app
+const app = express();
+
 // connecting the database
-mongoose.connect(config.mongoURI.production, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(config.mongoURI.production, { useNewUrlParser: true, useUnifiedTopology: true }); // Make sure to use the correct URI for your environment
 
 // test if the database has connected successfully
 let db = mongoose.connection;
@@ -24,8 +27,6 @@ db.on('error', function(err){
   console.log(err);
 });
 
-// Initializing the app
-const app = express();
 
 // View Engine
 app.set('view engine', 'ejs');
@@ -60,7 +61,13 @@ app.use('/', index);
 app.use('/image', image);
 
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT,() =>{
-    console.log(`Server is listening at http://localhost:${PORT}`)
-});
+// Export the app instance for testing
+module.exports = app;
+
+// Only start the server if this file is run directly (not imported by 'require')
+if (require.main === module) {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT,() =>{
+        console.log(`Server is listening at http://localhost:${PORT}`)
+    });
+}
