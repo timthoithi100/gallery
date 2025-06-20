@@ -48,10 +48,10 @@ pipeline {
                         ).trim()
 
                         if (response == "200" || response == "201") {
-                            echo "✅ Deploy triggered successfully on Render"
+                            echo "Deploy triggered successfully on Render"
                             sh 'sleep 30'
                         } else {
-                            error "❌ Failed to trigger deployment. HTTP status: ${response}"
+                            error "Failed to trigger deployment. HTTP status: ${response}"
                         }
                     }
                 }
@@ -75,22 +75,22 @@ pipeline {
                             ).trim()
 
                             if (response == "200") {
-                                echo "✅ Application is responding correctly"
+                                echo "Application is responding correctly"
                                 deploymentSuccessful = true
                             } else {
-                                echo "⏳ Waiting for deployment... (attempt ${retryCount + 1}/${maxRetries}) HTTP Code: ${response}"
+                                echo "Waiting for deployment... (attempt ${retryCount + 1}/${maxRetries}) HTTP Code: ${response}"
                                 sleep(30)
                                 retryCount++
                             }
                         } catch (Exception e) {
-                            echo "⏳ Deployment still in progress... (attempt ${retryCount + 1}/${maxRetries})"
+                            echo "Deployment still in progress... (attempt ${retryCount + 1}/${maxRetries})"
                             sleep(30)
                             retryCount++
                         }
                     }
 
                     if (!deploymentSuccessful) {
-                        error "⚠️ Could not verify deployment within timeout period. Please check Render logs for details."
+                        error "Could not verify deployment within timeout period. Please check Render logs for details."
                     }
                 }
             }
@@ -99,9 +99,9 @@ pipeline {
 
     post {
         failure {
-            echo '❌ Pipeline failed! Sending email notification...'
+            echo 'Pipeline failed! Sending email notification...'
             mail to: "${RECIPIENT}",
-                 subject: "🚨 Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  body: """\
 Hi,
 
@@ -120,10 +120,10 @@ Jenkins CI/CD
         }
 
         success {
-            echo '✅ Deployment successful! Sending notifications...'
+            echo 'Deployment successful! Sending notifications...'
 
             mail to: "${RECIPIENT}",
-                 subject: "✅ Deployment Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 subject: "Deployment Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  body: """\
 Hi,
 
