@@ -40,6 +40,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Express Session Middleware
+// WARNING: connect.session() MemoryStore is not designed for a production environment!
+// It will leak memory and not scale. Consider using a persistent session store like connect-mongo.
 app.use(session({
   secret: 'keyboard cat',
   resave: true,
@@ -56,6 +58,17 @@ app.use(function (req, res, next) {
 // Express Validator Middleware
 app.use(expressValidator());
 
+// IMPORTANT: Add a dedicated health check endpoint before other routes
+// This helps ensure it's always accessible and not blocked by other middleware issues.
+app.get('/health', (req, res) => {
+    // Check MongoDB connection status for a more robust health check
+    if (mongoose.connection.readyState === 1) { // 1 means connected
+        res.status(200).send('OK - Database Connected');
+    } else {
+        res.status(500).send('Error - Database Not Connected');
+    }
+});
+
 
 app.use('/', index);
 app.use('/image', image);
@@ -66,7 +79,7 @@ module.exports = app;
 
 // Only start the server if this file is run directly (not imported by 'require')
 if (require.main === module) {
-    const PORT = process.env.PORT || 5000;
+    const PORT = process.env.PORT || 10000;
     app.listen(PORT,() =>{
         console.log(`Server is listening at http://localhost:${PORT}`)
     });
