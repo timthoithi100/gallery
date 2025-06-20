@@ -56,6 +56,14 @@ app.use(function (req, res, next) {
 // Express Validator Middleware
 app.use(expressValidator());
 
+app.get('/health', (req, res) => {
+    // Check MongoDB connection status for a more robust health check
+    if (mongoose.connection.readyState === 1) { // 1 means connected
+        res.status(200).send('OK - Database Connected');
+    } else {
+        res.status(500).send('Error - Database Not Connected');
+    }
+});
 
 app.use('/', index);
 app.use('/image', image);
