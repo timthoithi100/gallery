@@ -7,6 +7,8 @@ pipeline {
 
     environment {
         RECIPIENT = 'tim.thoithi@student.moringaschool.com'
+        RENDER_URL = 'https://timthoithi-gallery.onrender.com'
+        SLACK_CHANNEL = '#social'
         // RENDER_DEPLOY_HOOK is NOT defined here globally anymore.
         // It's fetched securely within the 'Deploy to Render' stage.
     }
@@ -68,7 +70,7 @@ pipeline {
             steps {
                 echo 'Verifying deployment...'
                 script {
-                    def appUrl = "https://timthoithi-gallery.onrender.com"
+                    def appUrl = "${RENDER_URL}"
                     def maxRetries = 10
                     def retryCount = 0
                     def deploymentSuccessful = false
@@ -128,6 +130,7 @@ Jenkins CI/CD
         success {
             echo '✅ Deployment successful! Sending notifications...'
 
+            // Send email notification
             mail to: "${RECIPIENT}",
                  subject: "✅ Deployment Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  body: """\
@@ -139,13 +142,34 @@ Deployment Details:
 - Branch: ${env.BRANCH_NAME ?: 'main'}
 - Commit: ${env.GIT_COMMIT ?: 'N/A'}
 - Build URL: ${env.BUILD_URL}
-- App URL: https://timthoithi-gallery.onrender.com
+- App URL: ${RENDER_URL}
 
 Your application is now live!
 
 Regards,
 Jenkins CI/CD
 """
+
+            // Send Slack notification
+            script {
+                def slackMessage = """\
+🚀 *Deployment Successful!*
+
+*Project:* ${env.JOB_NAME}
+*Build ID:* #${env.BUILD_NUMBER}
+*Branch:* ${env.BRANCH_NAME ?: 'main'}
+*Site URL:* ${RENDER_URL}
+*Build Details:* ${env.BUILD_URL}
+
+Your application is now live! ✨
+""".stripIndent()
+
+                slackSend(
+                    channel: "${SLACK_CHANNEL}",
+                    message: slackMessage,
+                    color: 'good'
+                )
+            }
         }
 
         always {
