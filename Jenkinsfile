@@ -13,6 +13,12 @@ pipeline {
                 sh "npm install"
             }
         }
+
+        stage("Run tests") {
+            steps {
+                sh "npm test"
+            }
+        }
         
         stage("Deploy to Render") {
             steps {
