@@ -33,6 +33,21 @@ pipeline {
                     sh "curl -X POST $RENDER_DEPLOY_HOOK"
                 }
             }
+            post {
+                success {
+                    script {
+                        withCredentials([string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_WEBHOOK')]) {
+                            slackSend(
+                                webhook: "$SLACK_WEBHOOK",
+                                channel: '#social',
+                                message: "Deployment to Render successful! \n" +
+                                         "Build ID: ${env.BUILD_NUMBER}\n" +
+                                         "Render Link: https://gallery-aort.onrender.com/\n"
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
