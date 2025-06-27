@@ -52,14 +52,14 @@ pipeline {
                     }
                 }
             }
-        }
-        post {
-            success {
-                echo 'Pipeline finished successfully!'
-            }
+            post {
+                success {
+                    echo 'Pipeline finished successfully!'
+                }
 
-            failure {
-                echo 'Pipeline failed.'
+                failure {
+                    echo 'Pipeline failed.'
+                }
             }
         }
     }
